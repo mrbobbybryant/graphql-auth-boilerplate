@@ -1,5 +1,4 @@
 import User from 'models/users';
-import * as jwt from 'jsonwebtoken';
 
 export default async (_, __, { user_id }) => {
   if (!user_id) {

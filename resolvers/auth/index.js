@@ -1,5 +1,6 @@
 import signup from './mutations/signup';
 import login from './mutations/login';
+import logout from './mutations/logout';
 
 const typeDefs = `
   input UserSignupInput {
@@ -12,6 +13,7 @@ const resolvers = {
   Mutation: {
     signup,
     login,
+    logout,
   },
 };
 

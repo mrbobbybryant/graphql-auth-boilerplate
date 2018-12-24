@@ -45,7 +45,7 @@ app.use(async (req, res, next) => {
 app.use(
   '/',
   bodyParser.json(),
-  graphqlExpress(async req => ({
+  graphqlExpress(async (req, res) => ({
     schema,
     tracing: true,
     cacheControl: process.env.ENABLE_CACHING ? true : false,
@@ -57,7 +57,7 @@ app.use(
         return e;
       }
     },
-    context: { req, user_id: req.user_id },
+    context: { req, res, user_id: req.user_id },
   })),
 );
 

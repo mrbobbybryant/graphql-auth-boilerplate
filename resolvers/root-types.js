@@ -9,6 +9,7 @@ export default `
     #Auth
     signup(input: UserSignupInput!): User
     login(input: UserSignupInput!): User
+    logout: Boolean!
   }
 
   type Rules {

@@ -5,7 +5,6 @@ const typeDefs = `
   type User {
     id: Int!
     email: String!
-    token: String
   }
 `;
 
