@@ -2,7 +2,7 @@ import * as bcrypt from 'bcryptjs';
 import User from 'models/users';
 import jwt from '../shared/jwt';
 
-export default async (args, { input }, context) => {
+export const login = (User, bcrypt, jwt) => async (_, { input }, { req }) => {
   const { email, password } = input;
   const user = await User.get(email);
 
@@ -10,23 +10,22 @@ export default async (args, { input }, context) => {
     ApolloError({
       code: 400,
       field: 'email',
-      message: 'Invalid Email',
+      message: 'Invalid Email.',
     });
   }
 
-  const match = bcrypt.compareSync(password, user.password);
+  const match = await bcrypt.compare(password, user.password);
 
   if (!match) {
     ApolloError({
       code: 400,
       field: 'password',
-      message: 'Invalid Password',
+      message: 'Invalid Password.',
     });
   }
 
-  const token = jwt(user.id);
-  return {
-    ...user,
-    token,
-  };
+  req.session.userId = jwt(user.id);
+  return user;
 };
+
+export default login(User, bcrypt, jwt);
