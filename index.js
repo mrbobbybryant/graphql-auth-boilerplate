@@ -1,40 +1,43 @@
 import cors from 'cors';
 import express from 'express';
-import jwt from 'express-jwt';
+import * as jwt from 'jsonwebtoken';
+import redis from 'redis';
+import redisStore from 'connect-redis';
 import schema from './resolvers';
 import bodyParser from 'body-parser';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { Model } from 'objection';
+import session from 'express-session';
 import client from './models/knex';
 
 Model.knex(client);
+const store = redisStore(session);
+const redisClient = redis.createClient();
 
 const app = express();
 
 app.use(cors());
+
 app.use(
-  jwt({
+  session({
     secret: process.env.JWT_SECRET,
-    credentialsRequired: false,
-    userProperty: 'user',
+    store: new store({
+      host: 'localhost',
+      port: 6379,
+      client: redisClient,
+      ttl: 260,
+    }),
+    resave: false,
+    saveUninitialized: false,
   }),
 );
 
 app.use(async (req, res, next) => {
-  if (!req.user) return next();
-  // Load the user just in case we need the full user, remove later if not
-  //   try {
-  //     req.user = await globalContext
-  //       .client('wp_users')
-  //       .where('ID', req.user.data.userId)
-  //       .first();
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
+  if (!req.session || !req.session.userId) return next();
 
-  //   // Fuck wordpress
-  //   req.user.id = req.user.ID;
-  req.token = req.headers.authorization;
+  const { userId } = jwt.verify(req.session.userId, process.env.JWT_SECRET);
+
+  req.user_id = userId;
 
   next();
 });
@@ -42,7 +45,7 @@ app.use(async (req, res, next) => {
 app.use(
   '/',
   bodyParser.json(),
-  graphqlExpress(async ({ token }) => ({
+  graphqlExpress(async req => ({
     schema,
     tracing: true,
     cacheControl: process.env.ENABLE_CACHING ? true : false,
@@ -54,7 +57,7 @@ app.use(
         return e;
       }
     },
-    context: { token },
+    context: { req, user_id: req.user_id },
   })),
 );
 

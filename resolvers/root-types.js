@@ -2,6 +2,7 @@ export default `
   type Query {
     #Users
     users: [User]
+    me: User
   }
 
   type Mutation {
