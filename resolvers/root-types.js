@@ -10,6 +10,7 @@ export default `
     signup(input: UserSignupInput!): User
     login(input: UserSignupInput!): User
     logout: Boolean!
+    forgotPassword: Boolean!
   }
 
   type Rules {
