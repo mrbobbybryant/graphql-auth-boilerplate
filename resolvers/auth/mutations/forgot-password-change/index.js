@@ -22,7 +22,7 @@ export default async (_, { input }, { redis, req }) => {
     });
   }
 
-  const hashedPassword = await bcrypt.hash(input.password, 10);
+  const hashedPassword = await bcrypt.hash(input.password, process.env.SALT);
 
   try {
     await User.update(userId, { password: hashedPassword });
