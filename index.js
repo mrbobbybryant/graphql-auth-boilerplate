@@ -1,7 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import * as jwt from 'jsonwebtoken';
-import redis from 'redis';
+import Redis from 'ioredis';
 import redisStore from 'connect-redis';
 import schema from './resolvers';
 import bodyParser from 'body-parser';
@@ -12,7 +12,7 @@ import client from './models/knex';
 
 Model.knex(client);
 const store = redisStore(session);
-const redisClient = redis.createClient();
+const redisClient = new Redis();
 
 const app = express();
 
@@ -57,7 +57,7 @@ app.use(
         return e;
       }
     },
-    context: { req, res, user_id: req.user_id },
+    context: { req, res, user_id: req.user_id, redis: redisClient },
   })),
 );
 
