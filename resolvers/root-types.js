@@ -11,6 +11,7 @@ export default `
     login(input: UserSignupInput!): User
     logout: Boolean!
     forgotPassword: Boolean!
+    changePassword(input: UserChangePasswordInput!): User
   }
 
   type Rules {
