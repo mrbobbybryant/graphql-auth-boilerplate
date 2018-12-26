@@ -7,9 +7,7 @@ export default async (_, __, { user_id }) => {
     });
   }
 
-  const user = await User.query()
-    .where({ id: user_id })
-    .first();
+  const user = await User.getUserById(user_id);
 
   if (!user) {
     ApolloError({

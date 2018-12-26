@@ -8,6 +8,7 @@ export const signup = (User, jwt) => async (args, { input }, context) => {
     password: 'size:8',
     email: 'email',
   };
+
   const validation = new Validator(input, rules);
   const valid = validation.passes() ? true : validation.errors.all();
 
@@ -27,7 +28,7 @@ export const signup = (User, jwt) => async (args, { input }, context) => {
     });
   }
 
-  const password = await bcrypt.hash(input.password, 10);
+  const password = await bcrypt.hash(input.password, process.env.SALT);
 
   try {
     const user = await User.create(input.email, password);
